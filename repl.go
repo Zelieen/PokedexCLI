@@ -17,8 +17,14 @@ func startRepl() {
 		if len(input) == 0 {
 			continue
 		}
-		firstWord := cleanInput(input)[0]
-		fmt.Printf("Your command was: %s\n", firstWord)
+		commandInput := cleanInput(input)[0]
+		//fmt.Printf("Your command was: %s\n", command)
+		command, ok := getCommands()[commandInput]
+		if ok {
+			ExecuteCommand(command.callback)
+		} else {
+			fmt.Println("Unknown command")
+		}
 	}
 }
 
@@ -31,4 +37,13 @@ func cleanInput(text string) []string {
 		}
 	}
 	return cleanedInput
+}
+
+func ExecuteCommand(f func() error) error {
+	err := f()
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
 }
