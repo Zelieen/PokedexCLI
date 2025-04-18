@@ -2,13 +2,19 @@ package main
 
 import (
 	"fmt"
+	"internal/pokeAPI"
 	"os"
 )
 
 type cliCommand struct {
 	name        string
 	description string
-	callback    func() error
+	callback    func(params *config) error
+}
+
+type config struct {
+	next     string
+	previous string
 }
 
 func getCommands() map[string]cliCommand {
@@ -23,19 +29,31 @@ func getCommands() map[string]cliCommand {
 			description: "Exit the Pokedex",
 			callback:    commandExit,
 		},
+		"map": {
+			name:        "map",
+			description: "Displays the next 20 locations",
+			callback:    commandMap,
+		},
 	}
 }
 
-func commandExit() error {
+func commandHelp(params *config) error {
+	fmt.Print("Welcome to the Pokedex!\nUsage:\n\n")
+	for _, command := range getCommands() {
+		fmt.Printf("%s: %s\n", command.name, command.description)
+	}
+	return nil
+}
+
+func commandExit(params *config) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 	return nil
 }
 
-func commandHelp() error {
-	fmt.Print("Welcome to the Pokedex!\nUsage:\n\n")
-	for _, command := range getCommands() {
-		fmt.Printf("%s: %s\n", command.name, command.description)
-	}
+func commandMap(params *config) error {
+	fmt.Print("Welcome to the map!\nNot yet implemented, sorry!\n\n")
+	pokeAPI.PokeTest()
+
 	return nil
 }

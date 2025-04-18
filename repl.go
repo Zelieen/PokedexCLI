@@ -9,6 +9,7 @@ import (
 
 func startRepl() {
 	scanner := bufio.NewScanner(os.Stdin)
+	params_config := config{}
 
 	for {
 		fmt.Print("Pokedex > ")
@@ -21,7 +22,7 @@ func startRepl() {
 		//fmt.Printf("Your command was: %s\n", command)
 		command, ok := getCommands()[commandInput]
 		if ok {
-			ExecuteCommand(command.callback)
+			ExecuteCommand(command.callback, &params_config)
 		} else {
 			fmt.Println("Unknown command")
 		}
@@ -39,8 +40,8 @@ func cleanInput(text string) []string {
 	return cleanedInput
 }
 
-func ExecuteCommand(f func() error) error {
-	err := f()
+func ExecuteCommand(f func(params *config) error, params_pointer *config) error {
+	err := f(params_pointer)
 	if err != nil {
 		fmt.Println(err)
 		return err
