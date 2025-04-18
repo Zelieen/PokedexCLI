@@ -52,8 +52,6 @@ func commandExit(params *config) error {
 }
 
 func commandMap(params *config) error {
-	fmt.Print("Welcome to the map!\nNot yet implemented, sorry!\n\n")
-	pokeAPI.PokeTest()
-
+	pokeAPI.PokeLocationArea(params.next)
 	return nil
 }

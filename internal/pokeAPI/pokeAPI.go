@@ -1,10 +1,10 @@
 package pokeAPI
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
-	//"encoding/json"
 )
 
 type LocationArea struct {
@@ -17,25 +17,35 @@ type LocationArea struct {
 	} `json:"results"`
 }
 
-func PokeLocationArea() {
-	fmt.Println("But PokeAPI function says hi.")
+func PokeLocationArea(next_url string) {
+	fmt.Println("Not fully implemented. But PokeAPI function says hi.")
+	getUrl := "https://pokeapi.co/api/v2/location-area/?limit=20&offset=0"
+	if next_url != "" {
+		getUrl = next_url
+	}
 
-	//area := LocationArea{}
-
-	res, err := http.Get("https://pokeapi.co/api/v2/location-area/?limit=10&offset=0")
+	res, err := http.Get(getUrl)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+	defer res.Body.Close()
 	body, err := io.ReadAll(res.Body)
-	res.Body.Close()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	if res.StatusCode > 299 {
-		fmt.Printf("Response failed. Status code is %d\nThe response body:\n%s", res.StatusCode, body)
+		fmt.Printf("Response failed. Status code is %d\n", res.StatusCode)
 		return
 	}
-	fmt.Printf("The response body:\n%s\n", body)
+
+	area := LocationArea{}
+	err = json.Unmarshal(body, &area)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("The next area url:\n")
+	fmt.Println(area.Next)
 }
