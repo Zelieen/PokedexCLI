@@ -7,6 +7,10 @@ import (
 	"net/http"
 )
 
+const (
+	baseURL = "https://pokeapi.co/api/v2"
+)
+
 type LocationArea struct {
 	Count    int    `json:"count"`
 	Next     string `json:"next"`
@@ -17,35 +21,36 @@ type LocationArea struct {
 	} `json:"results"`
 }
 
-func PokeLocationArea(next_url string) {
-	fmt.Println("Not fully implemented. But PokeAPI function says hi.")
-	getUrl := "https://pokeapi.co/api/v2/location-area/?limit=20&offset=0"
-	if next_url != "" {
-		getUrl = next_url
+func GetLocationAreas(url string) (next string, previous string) {
+	getUrl := url
+	if getUrl == "" {
+		getUrl = baseURL + "/location-area/?limit=20&offset=0"
 	}
 
 	res, err := http.Get(getUrl)
 	if err != nil {
 		fmt.Println(err)
-		return
+		return "", ""
 	}
 	defer res.Body.Close()
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		fmt.Println(err)
-		return
+		return "", ""
 	}
 	if res.StatusCode > 299 {
 		fmt.Printf("Response failed. Status code is %d\n", res.StatusCode)
-		return
+		return "", ""
 	}
 
 	area := LocationArea{}
 	err = json.Unmarshal(body, &area)
 	if err != nil {
 		fmt.Println(err)
-		return
+		return "", ""
 	}
-	fmt.Printf("The next area url:\n")
-	fmt.Println(area.Next)
+	for _, place := range area.Results {
+		fmt.Println(place.Name)
+	}
+	return area.Next, area.Previous
 }

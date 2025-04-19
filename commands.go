@@ -34,6 +34,11 @@ func getCommands() map[string]cliCommand {
 			description: "Displays the next 20 locations",
 			callback:    commandMap,
 		},
+		"mapb": {
+			name:        "mapb",
+			description: "Displays the previous 20 locations",
+			callback:    commandMapBack,
+		},
 	}
 }
 
@@ -52,6 +57,19 @@ func commandExit(params *config) error {
 }
 
 func commandMap(params *config) error {
-	pokeAPI.PokeLocationArea(params.next)
+	nex, prev := pokeAPI.GetLocationAreas(params.next)
+	params.next = nex
+	params.previous = prev
+	return nil
+}
+
+func commandMapBack(params *config) error {
+	if params.previous == "" {
+		fmt.Println("you're on the first page, you can not go back")
+		return nil
+	}
+	nex, prev := pokeAPI.GetLocationAreas(params.previous)
+	params.next = nex
+	params.previous = prev
 	return nil
 }
