@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"internal/pokeAPI"
+	pokecache "internal/pokeCache"
 	"os"
 )
 
@@ -15,6 +16,7 @@ type cliCommand struct {
 type config struct {
 	next     string
 	previous string
+	cache    pokecache.Cache
 }
 
 func getCommands() map[string]cliCommand {
@@ -57,6 +59,7 @@ func commandExit(params *config) error {
 }
 
 func commandMap(params *config) error {
+
 	nex, prev := pokeAPI.GetLocationAreas(params.next)
 	params.next = nex
 	params.previous = prev

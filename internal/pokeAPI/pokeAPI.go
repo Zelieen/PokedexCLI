@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	//"internal/pokeCache"
+	//pokecache "internal/pokeCache"
 )
 
 const (

@@ -3,13 +3,17 @@ package main
 import (
 	"bufio"
 	"fmt"
+	pokecache "internal/pokeCache"
 	"os"
 	"strings"
+	"time"
 )
 
 func startRepl() {
 	scanner := bufio.NewScanner(os.Stdin)
-	params_config := config{}
+	params_config := config{
+		cache: pokecache.NewCache(5 * time.Second),
+	}
 
 	for {
 		fmt.Print("Pokedex > ")
