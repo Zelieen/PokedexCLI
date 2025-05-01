@@ -60,9 +60,11 @@ func commandExit(params *config) error {
 
 func commandMap(params *config) error {
 
-	nex, prev := pokeAPI.GetLocationAreas(params.next)
-	params.next = nex
-	params.previous = prev
+	area := pokeAPI.GetLocationAreasAPI(params.next)
+	params.next = area.Next
+	params.previous = area.Previous
+
+	pokeAPI.PrintLocationAreas(area)
 	return nil
 }
 
@@ -71,8 +73,10 @@ func commandMapBack(params *config) error {
 		fmt.Println("you're on the first page, you can not go back")
 		return nil
 	}
-	nex, prev := pokeAPI.GetLocationAreas(params.previous)
-	params.next = nex
-	params.previous = prev
+	area := pokeAPI.GetLocationAreasAPI(params.previous)
+	params.next = area.Next
+	params.previous = area.Previous
+
+	pokeAPI.PrintLocationAreas(area)
 	return nil
 }

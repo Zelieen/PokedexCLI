@@ -1,7 +1,6 @@
 package pokecache
 
 import (
-	"fmt"
 	"sync"
 	"time"
 )
@@ -45,31 +44,14 @@ func (c Cache) Get(key string) ([]byte, bool) {
 }
 
 func (c Cache) reapLoop(interval time.Duration) {
-	//should use time.Ticker to start reaping after interval
-	//reaping: clear all cache entries that are older than the interval
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
-	//ping := make(chan bool)
-
-	//go pinger(interval, ping)
 
 	for {
-		select {
-		case <-ticker.C:
-			fmt.Println("reaping Cache")
-			c.reap(interval)
-		default:
-			fmt.Println("reaploop returned")
-			return
-		}
+		<-ticker.C
+		c.reap(interval)
 	}
 }
-
-//func pinger(interval time.Duration, channel chan bool) {
-//	time.Sleep(interval)
-//	channel <- true
-//	pinger(interval, channel)
-//}
 
 func (c Cache) reap(interval time.Duration) {
 	c.mu.Lock()

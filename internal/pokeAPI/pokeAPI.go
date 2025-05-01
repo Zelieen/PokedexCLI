@@ -22,7 +22,8 @@ type LocationArea struct {
 	} `json:"results"`
 }
 
-func GetLocationAreas(url string) (next string, previous string) {
+func GetLocationAreasAPI(url string) LocationArea {
+	area := LocationArea{}
 	getUrl := url
 	if getUrl == "" {
 		getUrl = baseURL + "/location-area/?limit=20&offset=0"
@@ -31,27 +32,30 @@ func GetLocationAreas(url string) (next string, previous string) {
 	res, err := http.Get(getUrl)
 	if err != nil {
 		fmt.Println(err)
-		return "", ""
+		return area
 	}
 	defer res.Body.Close()
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		fmt.Println(err)
-		return "", ""
+		return area
 	}
 	if res.StatusCode > 299 {
 		fmt.Printf("Response failed. Status code is %d\n", res.StatusCode)
-		return "", ""
+		return area
 	}
 
-	area := LocationArea{}
 	err = json.Unmarshal(body, &area)
 	if err != nil {
 		fmt.Println(err)
-		return "", ""
+		return area
 	}
-	for _, place := range area.Results {
+
+	return area
+}
+
+func PrintLocationAreas(areas LocationArea) {
+	for _, place := range areas.Results {
 		fmt.Println(place.Name)
 	}
-	return area.Next, area.Previous
 }
