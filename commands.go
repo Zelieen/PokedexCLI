@@ -59,8 +59,20 @@ func commandExit(params *config) error {
 }
 
 func commandMap(params *config) error {
+	url := params.next
+	cached, ok := params.cache.Get(url)
+	if !ok {
+		//fmt.Println("not cached, trying API call")
+		new, err := pokeAPI.MakeAPICall(url)
+		if err != nil {
+			return err
+		}
+		params.cache.Add(url, new)
+		//fmt.Println("adding cache from API call")
+		cached = new
+	}
 
-	area := pokeAPI.GetLocationAreasAPI(params.next)
+	area := pokeAPI.GetAreas(cached)
 	params.next = area.Next
 	params.previous = area.Previous
 
@@ -69,11 +81,24 @@ func commandMap(params *config) error {
 }
 
 func commandMapBack(params *config) error {
-	if params.previous == "" {
+	url := params.previous
+	if url == "" {
 		fmt.Println("you're on the first page, you can not go back")
 		return nil
 	}
-	area := pokeAPI.GetLocationAreasAPI(params.previous)
+	cached, ok := params.cache.Get(url)
+	if !ok {
+		//fmt.Println("not cached, trying API call")
+		new, err := pokeAPI.MakeAPICall(url)
+		if err != nil {
+			return err
+		}
+		params.cache.Add(url, new)
+		//fmt.Println("adding cache from API call")
+		cached = new
+	}
+
+	area := pokeAPI.GetAreas(cached)
 	params.next = area.Next
 	params.previous = area.Previous
 
