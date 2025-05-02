@@ -23,6 +23,9 @@ func startRepl() {
 			continue
 		}
 		cleanedInput := cleanInput(input)
+		if len(cleanedInput) < 1 {
+			continue
+		}
 		//fmt.Printf("Your command was: %s\n", command)
 		command, ok := getCommands()[cleanedInput[0]]
 		if ok {

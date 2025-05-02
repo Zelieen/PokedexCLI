@@ -46,6 +46,11 @@ func getCommands() map[string]cliCommand {
 			description: "Prints the registered input for testing",
 			callback:    commandInput,
 		},
+		"explore": {
+			name:        "explore",
+			description: "lists all the Pokemon of the specified location (explore <location from map>)",
+			callback:    commandExplore,
+		},
 	}
 }
 
@@ -103,5 +108,14 @@ func commandInput(input []string, params *config) error {
 	for _, w := range input {
 		fmt.Println(w)
 	}
+	return nil
+}
+
+func commandExplore(input []string, params *config) error {
+	if len(input) < 2 {
+		fmt.Println("please provide a location after the explore command")
+		return nil
+	}
+	fmt.Println(pokeAPI.ConstructURL("location") + input[1] + "/")
 	return nil
 }
