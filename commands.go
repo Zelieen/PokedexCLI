@@ -10,7 +10,7 @@ import (
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(params *config) error
+	callback    func(input []string, params *config) error
 }
 
 type config struct {
@@ -41,10 +41,15 @@ func getCommands() map[string]cliCommand {
 			description: "Displays the previous 20 locations",
 			callback:    commandMapBack,
 		},
+		"input": {
+			name:        "input",
+			description: "Prints the registered input for testing",
+			callback:    commandInput,
+		},
 	}
 }
 
-func commandHelp(params *config) error {
+func commandHelp(input []string, params *config) error {
 	fmt.Print("Welcome to the Pokedex!\nUsage:\n\n")
 	for _, command := range getCommands() {
 		fmt.Printf("%s: %s\n", command.name, command.description)
@@ -52,18 +57,18 @@ func commandHelp(params *config) error {
 	return nil
 }
 
-func commandExit(params *config) error {
+func commandExit(input []string, params *config) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 	return nil
 }
 
-func commandMap(params *config) error {
+func commandMap(input []string, params *config) error {
 	url := params.next
 	return mapCommmandLogic(params, url)
 }
 
-func commandMapBack(params *config) error {
+func commandMapBack(input []string, params *config) error {
 	url := params.previous
 	if url == "" {
 		fmt.Println("you're on the first page, you can not go back")
@@ -90,5 +95,13 @@ func mapCommmandLogic(params *config, url string) error {
 	params.previous = area.Previous
 
 	pokeAPI.PrintLocationAreas(area)
+	return nil
+}
+
+func commandInput(input []string, params *config) error {
+	fmt.Println("These input words were received:")
+	for _, w := range input {
+		fmt.Println(w)
+	}
 	return nil
 }
