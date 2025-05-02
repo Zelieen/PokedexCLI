@@ -12,7 +12,7 @@ import (
 func startRepl() {
 	scanner := bufio.NewScanner(os.Stdin)
 	params_config := config{
-		cache: pokecache.NewCache(5 * time.Second),
+		cache: pokecache.NewCache(1 * time.Minute),
 	}
 
 	for {

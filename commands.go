@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"internal/pokeAPI"
+	pokeAPI "internal/pokeAPI"
 	pokecache "internal/pokeCache"
 	"os"
 )
@@ -60,24 +60,7 @@ func commandExit(params *config) error {
 
 func commandMap(params *config) error {
 	url := params.next
-	cached, ok := params.cache.Get(url)
-	if !ok {
-		//fmt.Println("not cached, trying API call")
-		new, err := pokeAPI.MakeAPICall(url)
-		if err != nil {
-			return err
-		}
-		params.cache.Add(url, new)
-		//fmt.Println("adding cache from API call")
-		cached = new
-	}
-
-	area := pokeAPI.GetAreas(cached)
-	params.next = area.Next
-	params.previous = area.Previous
-
-	pokeAPI.PrintLocationAreas(area)
-	return nil
+	return mapCommmandLogic(params, url)
 }
 
 func commandMapBack(params *config) error {
@@ -86,6 +69,10 @@ func commandMapBack(params *config) error {
 		fmt.Println("you're on the first page, you can not go back")
 		return nil
 	}
+	return mapCommmandLogic(params, url)
+}
+
+func mapCommmandLogic(params *config, url string) error {
 	cached, ok := params.cache.Get(url)
 	if !ok {
 		//fmt.Println("not cached, trying API call")
