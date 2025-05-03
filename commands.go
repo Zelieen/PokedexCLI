@@ -4,6 +4,7 @@ import (
 	"fmt"
 	pokeAPI "internal/pokeAPI"
 	pokecache "internal/pokeCache"
+	"math/rand"
 	"os"
 )
 
@@ -47,9 +48,14 @@ func getCommands() map[string]cliCommand {
 			callback:    commandInput,
 		},
 		"explore": {
-			name:        "explore",
-			description: "lists all the Pokemon of the specified location (explore <location from map>)",
+			name:        "explore <location from map>",
+			description: "lists all the Pokemon of the specified location",
 			callback:    commandExplore,
+		},
+		"catch": {
+			name:        "catch <pokemon>",
+			description: "Throws a pokeball at the pokemon",
+			callback:    commandCatch,
 		},
 	}
 }
@@ -132,4 +138,34 @@ func useCache(params *config, url string) []byte {
 		cached = new
 	}
 	return cached
+}
+
+func commandCatch(input []string, params *config) error {
+	if len(input) < 2 {
+		fmt.Println("please provide a pokemon name")
+		return nil
+	}
+	//fmt.Println(pokeAPI.ConstructURL("pokemon") + input[1] + "/")
+	url := pokeAPI.ConstructURL("pokemon") + input[1] + "/"
+	poke := useCache(params, url)
+	if poke == nil {
+		fmt.Println("there is no such pokemon")
+		return nil
+	}
+	//list := pokeAPI.GetPokemonList(area)
+	//fmt.Printf("Pokemon in %s:", input[1])
+	//pokeAPI.PrintList(list)
+	fmt.Printf("Throwing a Pokeball at %s...\n", input[1])
+	pokemon := pokeAPI.GetPokemonInfo(poke)
+	// Catchrate: BaseExperience / (BaseExperience + 50) (min/max BaseExperinece: 36/608)
+	cr := float32(pokemon.BaseExperience) / float32(pokemon.BaseExperience+80)
+	chance := rand.Float32()
+	if chance > cr {
+		fmt.Printf("The %s was caught!!\n", pokemon.Name)
+		//fmt.Printf("Caught: %v vs %v\n", chance, cr)
+	} else {
+		fmt.Printf("Aww... %s broke free.\n", pokemon.Name)
+		//fmt.Printf("Aww.. (%v vs %v)\n", chance, cr)
+	}
+	return nil
 }

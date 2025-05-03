@@ -56,6 +56,7 @@ func PrintLocationAreas(areas LocationArea) {
 func ConstructURL(target string) string {
 	endpoints := map[string]string{
 		"location": "/location-area/",
+		"pokemon":  "/pokemon/",
 	}
 
 	_, ok := endpoints[target]
@@ -78,6 +79,17 @@ func GetPokemonList(body []byte) []string {
 		pokeList = append(pokeList, pokemon.Pokemon.Name)
 	}
 	return pokeList
+}
+
+func GetPokemonInfo(body []byte) Pokemon {
+	pokemon := Pokemon{}
+	err := json.Unmarshal(body, &pokemon)
+	if err != nil {
+		fmt.Println(err)
+		return pokemon
+	}
+
+	return pokemon
 }
 
 func PrintList(list []string) {
