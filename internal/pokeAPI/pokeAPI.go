@@ -11,16 +11,6 @@ const (
 	baseURL = "https://pokeapi.co/api/v2"
 )
 
-type LocationArea struct {
-	Count    int    `json:"count"`
-	Next     string `json:"next"`
-	Previous string `json:"previous"`
-	Results  []struct {
-		Name string `json:"name"`
-		URL  string `json:"url"`
-	} `json:"results"`
-}
-
 func MakeAPICall(url string) ([]byte, error) {
 	getUrl := url
 	if getUrl == "" {
@@ -73,4 +63,25 @@ func ConstructURL(target string) string {
 		return ""
 	}
 	return baseURL + endpoints[target]
+}
+
+func GetPokemonList(body []byte) []string {
+	area := DetailedArea{}
+	err := json.Unmarshal(body, &area)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+
+	pokeList := make([]string, 1)
+	for _, pokemon := range area.PokemonEncounters {
+		pokeList = append(pokeList, pokemon.Pokemon.Name)
+	}
+	return pokeList
+}
+
+func PrintList(list []string) {
+	for _, item := range list {
+		fmt.Println(item)
+	}
 }

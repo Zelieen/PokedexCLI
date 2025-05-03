@@ -83,19 +83,9 @@ func commandMapBack(input []string, params *config) error {
 }
 
 func mapCommmandLogic(params *config, url string) error {
-	cached, ok := params.cache.Get(url)
-	if !ok {
-		//fmt.Println("not cached, trying API call")
-		new, err := pokeAPI.MakeAPICall(url)
-		if err != nil {
-			return err
-		}
-		params.cache.Add(url, new)
-		//fmt.Println("adding cache from API call")
-		cached = new
-	}
+	body := useCache(params, url)
 
-	area := pokeAPI.GetAreas(cached)
+	area := pokeAPI.GetAreas(body)
 	params.next = area.Next
 	params.previous = area.Previous
 
@@ -116,6 +106,30 @@ func commandExplore(input []string, params *config) error {
 		fmt.Println("please provide a location after the explore command")
 		return nil
 	}
-	fmt.Println(pokeAPI.ConstructURL("location") + input[1] + "/")
+	//fmt.Println(pokeAPI.ConstructURL("location") + input[1] + "/")
+	url := pokeAPI.ConstructURL("location") + input[1] + "/"
+	area := useCache(params, url)
+	if area == nil {
+		fmt.Println("no such location found")
+		return nil
+	}
+	list := pokeAPI.GetPokemonList(area)
+	fmt.Printf("Pokemon in %s:", input[1])
+	pokeAPI.PrintList(list)
 	return nil
+}
+
+func useCache(params *config, url string) []byte {
+	cached, ok := params.cache.Get(url)
+	if !ok {
+		//fmt.Println("not cached, trying API call")
+		new, err := pokeAPI.MakeAPICall(url)
+		if err != nil {
+			return nil
+		}
+		params.cache.Add(url, new)
+		//fmt.Println("adding cache from API call")
+		cached = new
+	}
+	return cached
 }
