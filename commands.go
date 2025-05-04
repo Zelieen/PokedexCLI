@@ -152,9 +152,7 @@ func commandCatch(input []string, params *config) error {
 		fmt.Println("there is no such pokemon")
 		return nil
 	}
-	//list := pokeAPI.GetPokemonList(area)
-	//fmt.Printf("Pokemon in %s:", input[1])
-	//pokeAPI.PrintList(list)
+
 	fmt.Printf("Throwing a Pokeball at %s...\n", input[1])
 	pokemon := pokeAPI.GetPokemonInfo(poke)
 	// Catchrate: BaseExperience / (BaseExperience + 50) (min/max BaseExperinece: 36/608)

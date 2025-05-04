@@ -12,8 +12,9 @@ import (
 func startRepl() {
 	scanner := bufio.NewScanner(os.Stdin)
 	params_config := config{
-		cache: pokecache.NewCache(1 * time.Minute),
+		cache: pokecache.NewCache(3 * time.Minute),
 	}
+	//pokedex := CreatePokedex()
 
 	for {
 		fmt.Print("Pokedex > ")
