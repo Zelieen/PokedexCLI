@@ -62,6 +62,11 @@ func getCommands() map[string]cliCommand {
 			description: "Print information on a pokemon",
 			callback:    commandInspect,
 		},
+		"pokedex": {
+			name:        "pokedex",
+			description: "Lists all pokemon in your pokedex",
+			callback:    commandPokedex,
+		},
 	}
 }
 
@@ -186,5 +191,16 @@ func commandInspect(input []string, params *config, dex *map[string]pokeAPI.Poke
 	}
 	pokeAPI.PrintPokemon(pokemon)
 
+	return nil
+}
+
+func commandPokedex(input []string, params *config, dex *map[string]pokeAPI.Pokemon) error {
+	if len(*dex) < 1 {
+		fmt.Println("Your pokedex is empty.")
+		return nil
+	}
+	for poke := range *dex {
+		fmt.Println(poke)
+	}
 	return nil
 }
