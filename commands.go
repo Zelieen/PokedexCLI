@@ -11,7 +11,7 @@ import (
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(input []string, params *config) error
+	callback    func(input []string, params *config, dex *map[string]pokeAPI.Pokemon) error
 }
 
 type config struct {
@@ -60,7 +60,7 @@ func getCommands() map[string]cliCommand {
 	}
 }
 
-func commandHelp(input []string, params *config) error {
+func commandHelp(input []string, params *config, dex *map[string]pokeAPI.Pokemon) error {
 	fmt.Print("Welcome to the Pokedex!\nUsage:\n\n")
 	for _, command := range getCommands() {
 		fmt.Printf("%s: %s\n", command.name, command.description)
@@ -68,18 +68,18 @@ func commandHelp(input []string, params *config) error {
 	return nil
 }
 
-func commandExit(input []string, params *config) error {
+func commandExit(input []string, params *config, dex *map[string]pokeAPI.Pokemon) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 	return nil
 }
 
-func commandMap(input []string, params *config) error {
+func commandMap(input []string, params *config, dex *map[string]pokeAPI.Pokemon) error {
 	url := params.next
 	return mapCommmandLogic(params, url)
 }
 
-func commandMapBack(input []string, params *config) error {
+func commandMapBack(input []string, params *config, dex *map[string]pokeAPI.Pokemon) error {
 	url := params.previous
 	if url == "" {
 		fmt.Println("you're on the first page, you can not go back")
@@ -99,7 +99,7 @@ func mapCommmandLogic(params *config, url string) error {
 	return nil
 }
 
-func commandInput(input []string, params *config) error {
+func commandInput(input []string, params *config, dex *map[string]pokeAPI.Pokemon) error {
 	fmt.Println("These input words were received:")
 	for _, w := range input {
 		fmt.Println(w)
@@ -107,7 +107,7 @@ func commandInput(input []string, params *config) error {
 	return nil
 }
 
-func commandExplore(input []string, params *config) error {
+func commandExplore(input []string, params *config, dex *map[string]pokeAPI.Pokemon) error {
 	if len(input) < 2 {
 		fmt.Println("please provide a location after the explore command")
 		return nil
@@ -140,7 +140,7 @@ func useCache(params *config, url string) []byte {
 	return cached
 }
 
-func commandCatch(input []string, params *config) error {
+func commandCatch(input []string, params *config, dex *map[string]pokeAPI.Pokemon) error {
 	if len(input) < 2 {
 		fmt.Println("please provide a pokemon name")
 		return nil
@@ -161,6 +161,7 @@ func commandCatch(input []string, params *config) error {
 	if chance > cr {
 		fmt.Printf("The %s was caught!!\n", pokemon.Name)
 		//fmt.Printf("Caught: %v vs %v\n", chance, cr)
+		(*dex)[pokemon.Name] = pokemon
 	} else {
 		fmt.Printf("Aww... %s broke free.\n", pokemon.Name)
 		//fmt.Printf("Aww.. (%v vs %v)\n", chance, cr)

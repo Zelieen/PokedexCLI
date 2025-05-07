@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"internal/pokeAPI"
 	pokecache "internal/pokeCache"
 	"os"
 	"strings"
@@ -14,7 +15,7 @@ func startRepl() {
 	params_config := config{
 		cache: pokecache.NewCache(3 * time.Minute),
 	}
-	//pokedex := CreatePokedex()
+	dex := CreatePokedex()
 
 	for {
 		fmt.Print("Pokedex > ")
@@ -30,7 +31,7 @@ func startRepl() {
 		//fmt.Printf("Your command was: %s\n", command)
 		command, ok := getCommands()[cleanedInput[0]]
 		if ok {
-			ExecuteCommand(command.callback, cleanedInput, &params_config)
+			ExecuteCommand(command.callback, cleanedInput, &params_config, &dex)
 		} else {
 			fmt.Println("Unknown command")
 		}
@@ -48,8 +49,8 @@ func cleanInput(text string) []string {
 	return cleanedInput
 }
 
-func ExecuteCommand(f func(input []string, params *config) error, input []string, params_pointer *config) error {
-	err := f(input, params_pointer)
+func ExecuteCommand(f func(input []string, params *config, dex *map[string]pokeAPI.Pokemon) error, input []string, params_pointer *config, dex *map[string]pokeAPI.Pokemon) error {
+	err := f(input, params_pointer, dex)
 	if err != nil {
 		fmt.Println(err)
 		return err
