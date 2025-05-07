@@ -57,6 +57,11 @@ func getCommands() map[string]cliCommand {
 			description: "Throws a pokeball at the pokemon",
 			callback:    commandCatch,
 		},
+		"inspect": {
+			name:        "inspect <pokemon>",
+			description: "Print information on a pokemon",
+			callback:    commandInspect,
+		},
 	}
 }
 
@@ -166,5 +171,20 @@ func commandCatch(input []string, params *config, dex *map[string]pokeAPI.Pokemo
 		fmt.Printf("Aww... %s broke free.\n", pokemon.Name)
 		//fmt.Printf("Aww.. (%v vs %v)\n", chance, cr)
 	}
+	return nil
+}
+
+func commandInspect(input []string, params *config, dex *map[string]pokeAPI.Pokemon) error {
+	if len(input) < 2 {
+		fmt.Println("please provide a pokemon name")
+		return nil
+	}
+	pokemon, ok := (*dex)[input[1]]
+	if !ok {
+		fmt.Printf("There is no data on %s\n", input[1])
+		return nil
+	}
+	pokeAPI.PrintPokemon(pokemon)
+
 	return nil
 }

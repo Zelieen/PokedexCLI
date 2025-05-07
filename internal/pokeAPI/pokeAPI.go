@@ -97,3 +97,20 @@ func PrintList(list []string) {
 		fmt.Println(item)
 	}
 }
+
+func PrintPokemon(poke Pokemon) {
+	fmt.Printf("Name: %s\n", poke.Name)
+	fmt.Printf("Height: %d\n", poke.Height)
+	fmt.Printf("Weight: %d\n", poke.Weight)
+	fmt.Println("Stats:")
+	fmt.Printf("  -hp: %d\n", poke.Stats[0].BaseStat)
+	fmt.Printf("  -attack: %d\n", poke.Stats[1].BaseStat)
+	fmt.Printf("  -defense: %d\n", poke.Stats[2].BaseStat)
+	fmt.Printf("  -special-attack: %d\n", poke.Stats[3].BaseStat)
+	fmt.Printf("  -special-defense: %d\n", poke.Stats[4].BaseStat)
+	fmt.Printf("  -speed: %d\n", poke.Stats[5].BaseStat)
+	fmt.Println("Types:")
+	for _, item := range poke.Types {
+		fmt.Printf("  -%s\n", item.Type.Name)
+	}
+}
