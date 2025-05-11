@@ -11,13 +11,14 @@ import (
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(input []string, params *config, dex *map[string]pokeAPI.Pokemon) error
+	callback    func(input []string, params *config) error
 }
 
 type config struct {
 	next     string
 	previous string
 	cache    pokecache.Cache
+	dex      map[string]pokeAPI.Pokemon
 }
 
 func getCommands() map[string]cliCommand {
@@ -70,7 +71,7 @@ func getCommands() map[string]cliCommand {
 	}
 }
 
-func commandHelp(input []string, params *config, dex *map[string]pokeAPI.Pokemon) error {
+func commandHelp(input []string, params *config) error {
 	fmt.Print("Welcome to the Pokedex!\nUsage:\n\n")
 	for _, command := range getCommands() {
 		fmt.Printf("%s: %s\n", command.name, command.description)
@@ -78,18 +79,18 @@ func commandHelp(input []string, params *config, dex *map[string]pokeAPI.Pokemon
 	return nil
 }
 
-func commandExit(input []string, params *config, dex *map[string]pokeAPI.Pokemon) error {
+func commandExit(input []string, params *config) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 	return nil
 }
 
-func commandMap(input []string, params *config, dex *map[string]pokeAPI.Pokemon) error {
+func commandMap(input []string, params *config) error {
 	url := params.next
 	return mapCommmandLogic(params, url)
 }
 
-func commandMapBack(input []string, params *config, dex *map[string]pokeAPI.Pokemon) error {
+func commandMapBack(input []string, params *config) error {
 	url := params.previous
 	if url == "" {
 		fmt.Println("you're on the first page, you can not go back")
@@ -109,7 +110,7 @@ func mapCommmandLogic(params *config, url string) error {
 	return nil
 }
 
-func commandInput(input []string, params *config, dex *map[string]pokeAPI.Pokemon) error {
+func commandInput(input []string, params *config) error {
 	fmt.Println("These input words were received:")
 	for _, w := range input {
 		fmt.Println(w)
@@ -117,7 +118,7 @@ func commandInput(input []string, params *config, dex *map[string]pokeAPI.Pokemo
 	return nil
 }
 
-func commandExplore(input []string, params *config, dex *map[string]pokeAPI.Pokemon) error {
+func commandExplore(input []string, params *config) error {
 	if len(input) < 2 {
 		fmt.Println("please provide a location after the explore command")
 		return nil
@@ -150,7 +151,7 @@ func useCache(params *config, url string) []byte {
 	return cached
 }
 
-func commandCatch(input []string, params *config, dex *map[string]pokeAPI.Pokemon) error {
+func commandCatch(input []string, params *config) error {
 	if len(input) < 2 {
 		fmt.Println("please provide a pokemon name")
 		return nil
@@ -171,7 +172,7 @@ func commandCatch(input []string, params *config, dex *map[string]pokeAPI.Pokemo
 	if chance > cr {
 		fmt.Printf("The %s was caught!!\n", pokemon.Name)
 		//fmt.Printf("Caught: %v vs %v\n", chance, cr)
-		(*dex)[pokemon.Name] = pokemon
+		(params.dex)[pokemon.Name] = pokemon
 	} else {
 		fmt.Printf("Aww... %s broke free.\n", pokemon.Name)
 		//fmt.Printf("Aww.. (%v vs %v)\n", chance, cr)
@@ -179,12 +180,12 @@ func commandCatch(input []string, params *config, dex *map[string]pokeAPI.Pokemo
 	return nil
 }
 
-func commandInspect(input []string, params *config, dex *map[string]pokeAPI.Pokemon) error {
+func commandInspect(input []string, params *config) error {
 	if len(input) < 2 {
 		fmt.Println("please provide a pokemon name")
 		return nil
 	}
-	pokemon, ok := (*dex)[input[1]]
+	pokemon, ok := (params.dex)[input[1]]
 	if !ok {
 		fmt.Printf("There is no data on %s\n", input[1])
 		return nil
@@ -194,12 +195,12 @@ func commandInspect(input []string, params *config, dex *map[string]pokeAPI.Poke
 	return nil
 }
 
-func commandPokedex(input []string, params *config, dex *map[string]pokeAPI.Pokemon) error {
-	if len(*dex) < 1 {
+func commandPokedex(input []string, params *config) error {
+	if len(params.dex) < 1 {
 		fmt.Println("Your pokedex is empty.")
 		return nil
 	}
-	for poke := range *dex {
+	for poke := range params.dex {
 		fmt.Println(poke)
 	}
 	return nil
