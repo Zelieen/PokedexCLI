@@ -68,6 +68,16 @@ func getCommands() map[string]cliCommand {
 			description: "Lists all pokemon in your pokedex",
 			callback:    commandPokedex,
 		},
+		"save": {
+			name:        "save",
+			description: "Saves your progress",
+			callback:    commandSave,
+		},
+		"load": {
+			name:        "load",
+			description: "Loads your progress",
+			callback:    commandLoad,
+		},
 	}
 }
 
@@ -203,5 +213,17 @@ func commandPokedex(input []string, params *config) error {
 	for poke := range params.dex {
 		fmt.Println(poke)
 	}
+	return nil
+}
+
+func commandSave(input []string, params *config) error {
+	//save the params_config to disk
+	fmt.Println("Saved your progress")
+	return nil
+}
+
+func commandLoad(input []string, params *config) error {
+	//load the params_config to disk
+	fmt.Println("Loading your progress")
 	return nil
 }
