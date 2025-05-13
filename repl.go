@@ -13,7 +13,7 @@ func startRepl() {
 	scanner := bufio.NewScanner(os.Stdin)
 	params_config := config{
 		cache: pokecache.NewCache(3 * time.Minute),
-		dex:   CreatePokedex(),
+		Dex:   CreatePokedex(),
 	}
 
 	for {

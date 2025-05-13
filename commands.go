@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	pokeAPI "internal/pokeAPI"
 	pokecache "internal/pokeCache"
@@ -18,7 +19,7 @@ type config struct {
 	next     string
 	previous string
 	cache    pokecache.Cache
-	dex      map[string]pokeAPI.Pokemon
+	Dex      map[string]pokeAPI.Pokemon
 }
 
 func getCommands() map[string]cliCommand {
@@ -182,7 +183,7 @@ func commandCatch(input []string, params *config) error {
 	if chance > cr {
 		fmt.Printf("The %s was caught!!\n", pokemon.Name)
 		//fmt.Printf("Caught: %v vs %v\n", chance, cr)
-		(params.dex)[pokemon.Name] = pokemon
+		(params.Dex)[pokemon.Name] = pokemon
 	} else {
 		fmt.Printf("Aww... %s broke free.\n", pokemon.Name)
 		//fmt.Printf("Aww.. (%v vs %v)\n", chance, cr)
@@ -195,7 +196,7 @@ func commandInspect(input []string, params *config) error {
 		fmt.Println("please provide a pokemon name")
 		return nil
 	}
-	pokemon, ok := (params.dex)[input[1]]
+	pokemon, ok := (params.Dex)[input[1]]
 	if !ok {
 		fmt.Printf("There is no data on %s\n", input[1])
 		return nil
@@ -206,11 +207,11 @@ func commandInspect(input []string, params *config) error {
 }
 
 func commandPokedex(input []string, params *config) error {
-	if len(params.dex) < 1 {
+	if len(params.Dex) < 1 {
 		fmt.Println("Your pokedex is empty.")
 		return nil
 	}
-	for poke := range params.dex {
+	for poke := range params.Dex {
 		fmt.Println(poke)
 	}
 	return nil
@@ -218,6 +219,16 @@ func commandPokedex(input []string, params *config) error {
 
 func commandSave(input []string, params *config) error {
 	//save the params_config to disk
+	saveData, err := json.Marshal(*params)
+	if err != nil {
+		fmt.Println("Error creating save file")
+		return err
+	}
+	err = os.WriteFile("./save.save", []byte(saveData), 0644)
+	if err != nil {
+		fmt.Println("Error while saving")
+		return err
+	}
 	fmt.Println("Saved your progress")
 	return nil
 }
